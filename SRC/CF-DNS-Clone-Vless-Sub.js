@@ -3282,9 +3282,9 @@ async function syncSingleDomain(id, env, returnLogs, log = console.log) {
   const db = env.WUYA;
   const syncLogic = async (innerLog) => {
       const { token, zoneId } = await getCfApiSettings(db);
-      if (!token || !zoneId) throw new Error("尚未配置 Cloudflare API 令牌或区域 ID。");
+      if (!token || !zoneId) throw new 错误("尚未配置 Cloudflare API 令牌或区域 ID。");
       const domain = await db.prepare("SELECT * FROM domains WHERE id = ?").bind(id).first();
-      if (!domain) throw new Error(`未找到 ID 为 ${id} 的目标。`);
+      if (!domain) throw new 错误(`未找到 ID 为 ${id} 的目标。`);
       if (!domain.is_enabled) {
           innerLog(`域名 ${domain.target_domain} 已被禁用，跳过同步。`);
           return;
@@ -3306,9 +3306,9 @@ async function syncSystemDomainsAsUnit(env, log) {
     
     try {
         const { token, zoneId } = await getCfApiSettings(db);
-        if (!token || !zoneId) throw new Error("尚未配置 Cloudflare API。");
+        if (!token || !zoneId) throw new 错误("尚未配置 Cloudflare API。");
 
-        const { results: systemDomains } = await db.prepare("SELECT * FROM domains WHERE is_enabled = 1 AND is_system = 1").all();
+        const { results: systemDomains } = await db.prepare("SELECT * FROM domains WHERE is_enabled = 1 AND is_system = 1").全部();
         if (systemDomains.length === 0) {
             log("没有已启用的系统域名需要同步。");
             return;
@@ -3316,9 +3316,9 @@ async function syncSystemDomainsAsUnit(env, log) {
 
         const sourceName = await getSetting(db, 'THREE_NETWORK_SOURCE') || 'CloudFlareYes';
         log(`正在从 ${sourceName} 获取三网优选IP...`);
-        const threeNetworkIps = await fetchThreeNetworkIps(sourceName, systemDomains, log);
+        const threeNetworkIps = await fetchThreeNetworkIps(sourceName, log);
         if (!threeNetworkIps || (threeNetworkIps.yd.length === 0 && threeNetworkIps.dx.length === 0 && threeNetworkIps.lt.length === 0)) {
-            throw new Error(`从 ${sourceName} 未获取到任何三网IP。`);
+            throw new 错误(`从 ${sourceName} 未获取到任何三网IP。`);
         }
         log(`获取成功: 移动(${threeNetworkIps.yd.length}) 电信(${threeNetworkIps.dx.length}) 联通(${threeNetworkIps.lt.length})`);
 
@@ -3344,7 +3344,7 @@ async function syncAllDomains(env, returnLogs, log = console.log) {
     
     await syncSystemDomainsAsUnit(env, innerLog).catch(e => innerLog(e.message));
     
-    const { results: nonSystemDomains } = await db.prepare("SELECT * FROM domains WHERE is_enabled = 1 AND is_system = 0").all();
+    const { results: nonSystemDomains } = await db.prepare("SELECT * FROM domains WHERE is_enabled = 1 AND is_system = 0").全部();
     if (nonSystemDomains.length === 0) {
       innerLog("没有需要同步的非系统域名。");
     } else {
